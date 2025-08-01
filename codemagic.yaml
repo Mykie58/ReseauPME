@@ -3,11 +3,10 @@ workflows:
     name: iOS Release Build
     environment:
       groups:
-        - github_access  # ton groupe avec GITHUB_TOKEN
+        - codemagic_credentials   # ton groupe contenant GITHUB_TOKEN et les secrets de signature
       vars:
         APPLE_ID: "michel.estorge@outlook.fr"
         APP_SPECIFIC_PASSWORD: "ReseauPME2025!"
-        CERTIFICATE_PASSWORD: "ReseauPME2025!"
         TEAM_ID: "S65D65K22C"
       flutter: stable
       xcode: latest
@@ -16,9 +15,32 @@ workflows:
         bundle_identifier: com.picmedia.reseaupme
 
     scripts:
-      - name: Install dependencies
-        script: flutter pub get
-      - name: Build ipa
-        script: flutter build ipa --release
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+
+      - name: Build iOS without codesign
+        script: |
+          flutter build ios --release --no-codesign \
+            --build-name=${APP_VERSION:-1.0.0} \
+            --build-number=${BUILD_NUMBER:-1}
+
+      - name: Apply provisioning profiles & certificates
+        script: |
+          xcode-project use-profiles
+
+      - name: Archive Xcode project
+        script: |
+          xcode-project archive \
+            --scheme Runner \
+            --archive-path build/Runner.xcarchive
+
+      - name: Export signed IPA
+        script: |
+          xcode-project export-archive \
+            --archive-path build/Runner.xcarchive \
+            --export-method app-store \
+            --export-path build/ios/ipa
+
     artifacts:
       - build/ios/ipa/*.ipa
