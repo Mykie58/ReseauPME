@@ -14,9 +14,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.picmedia.reseaupme
-        certificate_url: "certificate.p12"
-        certificate_password: "ReseauPME2025!"
-        provisioning_profile_url: "PIC_MEDIA.mobileprovision"
+
     scripts:
       - name: Install dependencies
         script: flutter pub get
