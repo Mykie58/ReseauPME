@@ -1,0 +1,23 @@
+name: google_api_headers
+description: “Un plugin pour récupérer le SHA1 de signature sur Android”
+version: 1.6.0
+publish_to: “none”  # sinon met l’URL de ton repo ou pub.dev
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.github.zeshuaro.google_api_headers
+        pluginClass: GoogleApiHeadersPlugin
+
+
+
+

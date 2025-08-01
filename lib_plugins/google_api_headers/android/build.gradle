@@ -1,0 +1,48 @@
+// Si tu utilises une ancienne version de Gradle (< 7.0) 
+// tu peux laisser ce bloc buildscript, sinon passe au bloc plugins { ... }
+// ------------------------------------------------------------------------
+buildscript {
+    ext.kotlin_version = '1.6.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+// Appliquer les plugins Android library + Kotlin
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+
+android {
+    // correspond au package de tes fichiers Kotlin/Java
+    namespace 'io.github.zeshuaro.google_api_headers'
+
+    compileSdkVersion 32
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+
+    // Alignement bytecode Java 1.8
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// Alignement bytecode Kotlin 1.8
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
