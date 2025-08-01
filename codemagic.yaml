@@ -1,14 +1,22 @@
 workflows:
   ios-release:
-    name: Build iOS App
+    name: iOS Release Build
     environment:
-      flutter: stable
-      xcode: latest
+      vars:
+        APPLE_ID: "michel.estorge@outlook.fr"
+        APP_SPECIFIC_PASSWORD: "ReseauPME2025!"
+        CERTIFICATE_PASSWORD: "ReseauPME2025!"
+        TEAM_ID: "S65D65K22C" # ton team ID
+      ios_signing:
+        certificate_url: "certificate.p12"
+        certificate_password: "ReseauPME2025!"
+        provisioning_profile_url: "PIC_MEDIA.mobileprovision"
     scripts:
-      - name: Get dependencies
-        script: flutter pub get
+      - name: Install dependencies
+        script: |
+          flutter pub get
       - name: Build ipa
-        script: flutter build ipa --release
+        script: |
+          flutter build ipa --release
     artifacts:
       - build/ios/ipa/*.ipa
-
