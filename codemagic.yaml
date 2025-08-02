@@ -3,7 +3,7 @@ workflows:
     name: iOS Release Build
     environment:
       groups:
-        - codemagic_credentials   # groupe avec ton GITHUB_TOKEN + secrets de signature
+        - codemagic_credentials
       vars:
         APPLE_ID: "michel.estorge@outlook.fr"
         APP_SPECIFIC_PASSWORD: "ReseauPME2025!"
@@ -15,9 +15,8 @@ workflows:
         bundle_identifier: com.picmedia.reseaupme
 
     scripts:
-      - name: Get dependencies
-        script: |
-          flutter pub get
+      - name: Get Flutter dependencies
+        script: flutter pub get
 
       - name: Bump iOS deployment target
         script: |
@@ -30,27 +29,20 @@ workflows:
           pod install --repo-update
           cd ..
 
-      - name: Apply provisioning profiles & certificates
+      - name: Clean Xcode build folder
         script: |
-          xcode-project use-profiles \
-            --workspace ios/Runner.xcworkspace \
-            --scheme Runner
+          xcodebuild clean -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
 
-
-      - name: Archive with xcodebuild
+      - name: Archive & sign with automatic signing
         script: |
-          xcodebuild clean -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos
-
           xcodebuild archive \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
             -configuration Release \
             -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=$TEAM_ID \
-            CODE_SIGN_STYLE=Manual
+            CODE_SIGN_STYLE=Automatic \
+            -allowProvisioningUpdates
 
       - name: Export signed IPA
         script: |
@@ -62,4 +54,3 @@ workflows:
 
     artifacts:
       - build/ios/ipa/*.ipa
-
