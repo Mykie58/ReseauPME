@@ -15,13 +15,12 @@ workflows:
         bundle_identifier: com.picmedia.reseaupme
 
     scripts:
-      - name: Get Flutter dependencies
+      - name: Get dependencies
         script: flutter pub get
 
       - name: Bump iOS deployment target
         script: |
           sed -i '' "s/platform :ios, '.*'/platform :ios, '14.0'/" ios/Podfile
-          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = .*/IPHONEOS_DEPLOYMENT_TARGET = 14.0/g" ios/Runner.xcodeproj/project.pbxproj
 
       - name: Install CocoaPods
         script: |
@@ -29,28 +28,14 @@ workflows:
           pod install --repo-update
           cd ..
 
-      - name: Clean Xcode build folder
+      - name: Build IPA with Codemagic CLI
         script: |
-          xcodebuild clean -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
-
-      - name: Archive & sign with automatic signing
-        script: |
-          xcodebuild archive \
-            -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -archivePath build/Runner.xcarchive \
-            DEVELOPMENT_TEAM=$TEAM_ID \
-            CODE_SIGN_STYLE=Automatic \
-            -allowProvisioningUpdates
-
-      - name: Export signed IPA
-        script: |
-          xcodebuild -exportArchive \
-            -archivePath build/Runner.xcarchive \
-            -exportMethod app-store \
-            -exportPath build/ios/ipa \
-            -allowProvisioningUpdates
+          xcode-project build-ipa \
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner \
+            --export-method app-store \
+            --export-path build/ios/ipa
 
     artifacts:
       - build/ios/ipa/*.ipa
+
