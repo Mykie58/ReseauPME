@@ -3,7 +3,7 @@ workflows:
     name: iOS Release Build
     environment:
       groups:
-        - codemagic_credentials   # ton groupe contenant GITHUB_TOKEN et les secrets de signature
+        - codemagic_credentials   # groupe avec ton GITHUB_TOKEN + secrets de signature
       vars:
         APPLE_ID: "michel.estorge@outlook.fr"
         APP_SPECIFIC_PASSWORD: "ReseauPME2025!"
@@ -15,32 +15,48 @@ workflows:
         bundle_identifier: com.picmedia.reseaupme
 
     scripts:
-      - name: Get Flutter dependencies
+      - name: Get dependencies
         script: |
           flutter pub get
 
-      - name: Build iOS without codesign
+      - name: Bump iOS deployment target
         script: |
-          flutter build ios --release --no-codesign \
-            --build-name=${APP_VERSION:-1.0.0} \
-            --build-number=${BUILD_NUMBER:-1}
+          sed -i '' "s/platform :ios, '.*'/platform :ios, '14.0'/" ios/Podfile
+          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = .*/IPHONEOS_DEPLOYMENT_TARGET = 14.0/g" ios/Runner.xcodeproj/project.pbxproj
+
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install --repo-update
+          cd ..
 
       - name: Apply provisioning profiles & certificates
         script: |
           xcode-project use-profiles
 
-      - name: Archive Xcode project
+      - name: Archive with xcodebuild
         script: |
-          xcode-project archive \
-            --scheme Runner \
-            --archive-path build/Runner.xcarchive
+          xcodebuild clean -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos
+
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            DEVELOPMENT_TEAM=$TEAM_ID \
+            CODE_SIGN_STYLE=Manual
 
       - name: Export signed IPA
         script: |
-          xcode-project export-archive \
-            --archive-path build/Runner.xcarchive \
-            --export-method app-store \
-            --export-path build/ios/ipa
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportMethod app-store \
+            -exportPath build/ios/ipa \
+            -allowProvisioningUpdates
 
     artifacts:
       - build/ios/ipa/*.ipa
+
