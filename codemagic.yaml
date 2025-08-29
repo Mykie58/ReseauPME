@@ -32,6 +32,7 @@ workflows:
           xcode-project build-ipa \
           --workspace ios/Runner.xcworkspace \
           --scheme Runner \
+          --export-options-plist ios/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
