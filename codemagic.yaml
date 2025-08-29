@@ -27,14 +27,13 @@ workflows:
           cd ios
           pod install --repo-update
           cd ..
-
       - name: Build IPA with Codemagic CLI
         script: |
           xcode-project build-ipa \
-            --workspace ios/Runner.xcworkspace \
-            --scheme Runner \
-            --export-method app-store \
-            --export-path build/ios/ipa
+          --workspace ios/Runner.xcworkspace \
+          --scheme Runner \
+          --export-method app-store \
+          --output-dir build/ios/ipa
 
     artifacts:
       - build/ios/ipa/*.ipa
