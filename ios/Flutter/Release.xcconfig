@@ -1,0 +1,4 @@
+#include "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+#include "Generated.xcconfig"
+HEADER_SEARCH_PATHS = $(inherited) /Users/user285495/flutter/bin/cache/artifacts/engine/ios/Flutter.xcframework/ios-arm64/Flutter.framework/Headers
+SWIFT_INCLUDE_PATHS = $(inherited) /Users/user285495/flutter/bin/cache/artifacts/engine/ios/Flutter.xcframework/ios-arm64
