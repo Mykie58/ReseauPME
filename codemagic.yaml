@@ -13,6 +13,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.picmedia.reseaupme
+        signing_certificate: "Apple Distribution: Michel Estorge (S65D65K22C)"
+        provisioning_profile: "PICMEDIA2025"
 
     scripts:
       - name: Get dependencies
@@ -27,13 +29,20 @@ workflows:
           cd ios
           pod install --repo-update
           cd ..
+
+      - name: Apply provisioning profile
+        script: |
+          xcode-project use-profiles \
+            --project ios/Runner.xcodeproj \
+            --target Runner \
+            --profile PROD
+
       - name: Build IPA with Codemagic CLI
         script: |
           xcode-project build-ipa \
-          --workspace ios/Runner.xcworkspace \
-          --scheme Runner \
-          --export-options-plist ios/export_options.plist
+            --workspace ios/Runner.xcworkspace \
+            --scheme Runner \
+            --export-options-plist ios/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
-
