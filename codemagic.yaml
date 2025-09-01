@@ -13,8 +13,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.picmedia.reseaupme
-        signing_certificate: "Apple Distribution: Michel Estorge (S65D65K22C)"
-        provisioning_profile: "PICMEDIA2025"
 
     scripts:
       - name: Get dependencies
