@@ -15,7 +15,6 @@ workflows:
         bundle_identifier: com.picmedia.reseaupme
       automatic_code_signing: true
 
-
     scripts:
       - name: Get dependencies
         script: flutter pub get
@@ -29,12 +28,6 @@ workflows:
           cd ios
           pod install --repo-update
           cd ..
-
-      - name: Apply provisioning profile
-        script: |
-          xcode-project use-profiles \
-            --project ios/Runner.xcodeproj \
-            --profile PICMEDIA2025
 
       - name: Build IPA with Codemagic CLI
         script: |
