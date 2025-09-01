@@ -32,7 +32,6 @@ workflows:
         script: |
           xcode-project use-profiles \
             --project ios/Runner.xcodeproj \
-            --target Runner \
             --profile PICMEDIA2025
 
       - name: Build IPA with Codemagic CLI
